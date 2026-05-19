@@ -18,14 +18,14 @@ public class FileStorageService {
     private final MinioService minioService;
 
     public StoredObject storeSourceFile(UUID taskId, MultipartFile file, SupportedFileType fileType) {
-        try {
+        try (InputStream inputStream = file.getInputStream()) {
             String bucket = minioService.defaultBucket();
             String extension = fileType.name().toLowerCase();
             String objectKey = "incoming/" + taskId + "/source." + extension;
             minioService.upload(
                     bucket,
                     objectKey,
-                    file.getBytes(),
+                    inputStream,
                     file.getSize(),
                     resolveContentType(file)
             );
@@ -37,6 +37,10 @@ public class FileStorageService {
 
     public InputStream download(String bucket, String objectKey) {
         return minioService.download(bucket, objectKey);
+    }
+
+    public void delete(String bucket, String objectKey) {
+        minioService.delete(bucket, objectKey);
     }
 
     private String resolveContentType(MultipartFile file) {

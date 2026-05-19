@@ -1,6 +1,7 @@
 package com.program.flow_manager.service.outbox;
 
 import com.program.flow_manager.domain.dao.OutboxEventRepository;
+import com.program.flow_manager.domain.model.OutboxAggregateType;
 import com.program.flow_manager.domain.model.OutboxEventEntity;
 import com.program.flow_manager.domain.model.OutboxStatus;
 import com.program.flow_manager.kafka.dto.ConversionRequestEvent;
@@ -18,7 +19,7 @@ public class OutboxService {
     private final OutboxPayloadMapper payloadMapper;
 
     public void enqueue(
-            String aggregateType,
+            OutboxAggregateType aggregateType,
             UUID aggregateId,
             String dedupKey,
             String partitionKey,

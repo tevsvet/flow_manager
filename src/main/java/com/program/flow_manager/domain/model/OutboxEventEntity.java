@@ -18,8 +18,9 @@ public class OutboxEventEntity {
     @Id
     private UUID id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "aggregate_type", nullable = false)
-    private String aggregateType;
+    private OutboxAggregateType aggregateType;
 
     @Column(name = "aggregate_id", nullable = false)
     private UUID aggregateId;

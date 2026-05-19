@@ -2,11 +2,7 @@ package com.program.flow_manager.minio;
 
 import com.program.flow_manager.config.properties.MinioProperties;
 import com.program.flow_manager.exception.StorageException;
-import io.minio.BucketExistsArgs;
-import io.minio.GetObjectArgs;
-import io.minio.MakeBucketArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import io.minio.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -54,18 +50,31 @@ public class MinioService {
         }
     }
 
-    public void upload(String bucket, String objectKey, byte[] content, long size, String contentType) {
+    public void upload(String bucket, String objectKey, InputStream inputStream, long size, String contentType) {
         try {
             minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(bucket)
                             .object(objectKey)
-                            .stream(new ByteArrayInputStream(content), size, -1)
+                            .stream(inputStream, size, -1)
                             .contentType(contentType)
                             .build()
             );
         } catch (Exception ex) {
             throw new StorageException("Failed to upload object '" + objectKey + "' to bucket '" + bucket + "'", ex);
+        }
+    }
+
+    public void delete(String bucket, String objectKey) {
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(bucket)
+                            .object(objectKey)
+                            .build()
+            );
+        } catch (Exception ex) {
+            throw new StorageException("Failed to delete object '" + objectKey + "' from bucket '" + bucket + "'", ex);
         }
     }
 }

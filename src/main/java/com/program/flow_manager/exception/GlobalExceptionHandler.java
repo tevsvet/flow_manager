@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
+import java.time.Instant;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -46,6 +48,17 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_GATEWAY, "STORAGE_ERROR", ex.getMessage(), request);
     }
 
+    @ExceptionHandler(ConversionSubmissionException.class)
+    public ResponseEntity<ApiError> handleConversionSubmission(ConversionSubmissionException ex, HttpServletRequest request) {
+        log.error("Conversion submission failed", ex);
+        return buildResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "CONVERSION_SUBMISSION_FAILED",
+                "Failed to submit file for conversion",
+                request
+        );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleUnexpected(Exception ex, HttpServletRequest request) {
         log.error("Unexpected server error", ex);
@@ -63,7 +76,7 @@ public class GlobalExceptionHandler {
                         code,
                         message,
                         request.getRequestURI(),
-                        java.time.Instant.now()
+                        Instant.now()
                 )
         );
     }
